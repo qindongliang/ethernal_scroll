@@ -92,13 +92,12 @@ export default {
       }
     })
 
-    function debounce(f, d = 80, t) {
-      return (...a) => {
-        clearTimeout(t)
-        t = setTimeout(() => {
-          f.apply(this, a)
-        }, d)
-      }
+    function debounce(func, timeout = 300){
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+      };
     }
 
 
