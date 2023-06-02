@@ -34,6 +34,7 @@ export default {
   data() {
     return {
       loading: false,
+      isBottom: false,
       items: [],
       page_count: 0,
       sizes: ["tall", "taller", "tallest"]
@@ -42,20 +43,36 @@ export default {
   methods: {
     getNextBatch(size) {
       this.loading = true;
-      axios.get("https://random-data-api.com/api/v2/users?size=" + size + "&response_type=json").then((response) => {
+      if(Math.floor(Math.random() * 5)%2==0){
 
-        response.data.map((x) => {
-          const new_item = {
-            name: x.first_name + " " + x.last_name,
-            dob: x.date_of_birth,
-            location: x.address.state,
-            size: this.sizes[Math.floor(Math.random() * this.sizes.length)]
-          };
-          this.items.push(new_item)
-        })
-        this.loading = false;
-        this.page_count++;
-      });
+
+        axios.get("https://random-data-api.com/api/v2/users?size=" + size + "&response_type=json").then((response) => {
+
+          response.data.map((x) => {
+            const new_item = {
+              name: x.first_name + " " + x.last_name,
+              dob: x.date_of_birth,
+              location: x.address.state,
+              size: this.sizes[Math.floor(Math.random() * this.sizes.length)]
+            };
+            this.items.push(new_item)
+          })
+          this.loading = false;
+          this.isBottom = false
+          this.page_count++;
+          return false
+        });
+      }else{
+
+        setTimeout(()=>{
+          this.loading = false;
+          console.log("not found data")
+        },500)
+        return true
+
+
+      }
+
     }
   },
   beforeMount() {
@@ -66,11 +83,49 @@ export default {
 
     document.title = "Ethrnal Scroll Demo";
 
+
     masonry.addEventListener('scroll', e => {
       if (masonry.scrollTop + masonry.clientHeight >= masonry.scrollHeight) {
-        this.getNextBatch(30);
+        // this.getNextBatch(30);
+        // this.getNextBatch(5);
+        this.isBottom=true
       }
     })
+
+    function debounce(f, d = 80, t) {
+      return (...a) => {
+        clearTimeout(t)
+        t = setTimeout(() => {
+          f.apply(this, a)
+        }, d)
+      }
+    }
+
+
+
+    masonry.addEventListener('wheel', debounce((e)=>{
+
+      // console.log(`${e.deltaY}   `)
+      // let scrollDistance= Math.abs(e.wheelDelta || -e.deltaY * 40)
+      if(this.isBottom){
+        this.loading=true
+        console.log("触发查询")
+
+        setTimeout(()=>{
+          let empty = this.getNextBatch(10);
+          if(empty){
+            alert("暂无最新数据！")
+          }
+          this.loading=false
+
+        }, 100)
+        // isBottom=false
+      }
+
+    }))
+
+
+
   },
 };
 </script>
