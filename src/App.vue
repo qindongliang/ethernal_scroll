@@ -16,7 +16,8 @@
           </div>
         </transition>
 
-        <grid-item :class="item.size" v-for="item in items">
+<!--        <grid-item style="scroll-snap-align:end" :class="item.size" v-for="item in items">-->
+        <grid-item style="scroll-snap-align:center;text-align: center" :class="item.size" v-for="item in items">
           <p><em>Name</em>: {{ item.name }}<br>
             <em>Date of birth</em>: {{ item.dob }}<br>
             <em>Place of birth</em>: {{ item.location }}</p>
@@ -53,7 +54,8 @@ export default {
               name: x.first_name + " " + x.last_name,
               dob: x.date_of_birth,
               location: x.address.state,
-              size: this.sizes[Math.floor(Math.random() * this.sizes.length)]
+              // size: this.sizes[Math.floor(Math.random() * this.sizes.length)]
+              size: this.sizes[2]
             };
             this.items.push(new_item)
           })
@@ -199,6 +201,9 @@ grid-container {
   border-radius: 5px;
   text-align: center;
   margin: 0 0 35px 0;
+  scroll-snap-type: both mandatory;
+  overscroll-behavior-y: contain;
+  padding-bottom: 20px;
 }
 
 .tall {
